@@ -1,0 +1,87 @@
+{
+  "languageName": "Русский",
+  "auth": {
+    "registered": "Регистрация успешна",
+    "loginSuccess": "Вход выполнен успешно",
+    "logoutSuccess": "Выход выполнен успешно",
+    "invalidCredentials": "Неверные учетные данные",
+    "tokenExpired": "Сессия истекла. Пожалуйста, войдите снова",
+    "tokenInvalid": "Недействительный токен",
+    "accountBanned": "Ваш аккаунт заблокирован",
+    "accountSuspended": "Ваш аккаунт приостановлен",
+    "phoneRequired": "Требуется номер телефона",
+    "otpSent": "OTP код отправлен",
+    "otpInvalid": "Неверный OTP код",
+    "otpExpired": "OTP код истек"
+  },
+  "kyc": {
+    "documentUploaded": "Документ загружен успешно",
+    "verificationSuccess": "KYC верификация успешна",
+    "alreadyVerified": "KYC уже подтвержден",
+    "pendingReview": "Документы отправлены на проверку",
+    "rejected": "KYC верификация отклонена",
+    "required": "Требуется KYC верификация",
+    "idRequired": "Требуется документ удостоверяющий личность",
+    "selfieRequired": "Требуется селфи",
+    "faceMismatch": "Лицо не совпадает с фото на документе"
+  },
+  "user": {
+    "profileUpdated": "Профиль обновлен успешно",
+    "avatarUpdated": "Аватар обновлен успешно",
+    "locationUpdated": "Местоположение обновлено",
+    "accountDeleted": "Аккаунт удален успешно",
+    "notFound": "Пользователь не найден"
+  },
+  "post": {
+    "created": "Объявление создано успешно",
+    "updated": "Объявление обновлено успешно",
+    "deleted": "Объявление удалено успешно",
+    "statusUpdated": "Статус объявления обновлен",
+    "imagesAdded": "Изображения добавлены успешно",
+    "imageRemoved": "Изображение удалено успешно",
+    "notFound": "Объявление не найдено",
+    "maxImages": "Максимум 5 изображений",
+    "minImages": "Требуется минимум 1 изображение"
+  },
+  "message": {
+    "sent": "Сообщение отправлено",
+    "deleted": "Сообщение удалено",
+    "conversationDeleted": "Диалог удален",
+    "markedAsRead": "Сообщения отмечены как прочитанные",
+    "notFound": "Сообщение не найдено"
+  },
+  "errors": {
+    "serverError": "Внутренняя ошибка сервера",
+    "notFound": "Ресурс не найден",
+    "unauthorized": "Неавторизованный доступ",
+    "forbidden": "Доступ запрещен",
+    "badRequest": "Неверный запрос",
+    "validationError": "Ошибка валидации",
+    "tooManyRequests": "Слишком много запросов. Попробуйте позже",
+    "kycRequired": "Для выполнения этого действия требуется KYC верификация",
+    "userNotFound": "Пользователь не найден",
+    "postNotFound": "Объявление не найдено",
+    "gameNotFound": "Игра не найдена",
+    "conversationNotFound": "Диалог не найден",
+    "messageNotFound": "Сообщение не найдено",
+    "fileUploadFailed": "Ошибка загрузки файла",
+    "invalidFileType": "Недопустимый тип файла"
+  },
+  "admin": {
+    "userBanned": "Пользователь заблокирован",
+    "userUnbanned": "Пользователь разблокирован",
+    "userSuspended": "Пользователь приостановлен",
+    "postDeleted": "Объявление удалено",
+    "kycApproved": "KYC одобрен",
+    "kycRejected": "KYC отклонен"
+  },
+  "validation": {
+    "required": "Поле {{field}} обязательно",
+    "minLength": "{{field}} должно содержать минимум {{min}} символов",
+    "maxLength": "{{field}} должно содержать максимум {{max}} символов",
+    "email": "Введите корректный email",
+    "phone": "Введите корректный номер телефона",
+    "price": "Введите корректную цену",
+    "invalidId": "Неверный формат ID"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "languageName": "English",
+  "auth": {
+    "registered": "Registration successful",
+    "loginSuccess": "Login successful",
+    "logoutSuccess": "Logged out successfully",
+    "invalidCredentials": "Invalid credentials",
+    "tokenExpired": "Session expired. Please login again",
+    "tokenInvalid": "Invalid token",
+    "accountBanned": "Your account has been banned",
+    "accountSuspended": "Your account is suspended",
+    "phoneRequired": "Phone number is required",
+    "otpSent": "OTP sent successfully",
+    "otpInvalid": "Invalid OTP code",
+    "otpExpired": "OTP has expired"
+  },
+  "kyc": {
+    "documentUploaded": "Document uploaded successfully",
+    "verificationSuccess": "KYC verification successful",
+    "alreadyVerified": "KYC already verified",
+    "pendingReview": "Documents submitted for review",
+    "rejected": "KYC verification rejected",
+    "required": "KYC verification is required",
+    "idRequired": "ID document is required",
+    "selfieRequired": "Selfie is required",
+    "faceMismatch": "Face does not match ID photo"
+  },
+  "user": {
+    "profileUpdated": "Profile updated successfully",
+    "avatarUpdated": "Avatar updated successfully",
+    "locationUpdated": "Location updated successfully",
+    "accountDeleted": "Account deleted successfully",
+    "notFound": "User not found"
+  },
+  "post": {
+    "created": "Post created successfully",
+    "updated": "Post updated successfully",
+    "deleted": "Post deleted successfully",
+    "statusUpdated": "Post status updated",
+    "imagesAdded": "Images added successfully",
+    "imageRemoved": "Image removed successfully",
+    "notFound": "Post not found",
+    "maxImages": "Maximum 5 images allowed",
+    "minImages": "At least 1 image is required"
+  },
+  "message": {
+    "sent": "Message sent",
+    "deleted": "Message deleted",
+    "conversationDeleted": "Conversation deleted",
+    "markedAsRead": "Messages marked as read",
+    "notFound": "Message not found"
+  },
+  "errors": {
+    "serverError": "Internal server error",
+    "notFound": "Resource not found",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access denied",
+    "badRequest": "Bad request",
+    "validationError": "Validation failed",
+    "tooManyRequests": "Too many requests. Please try again later",
+    "kycRequired": "KYC verification is required to perform this action",
+    "userNotFound": "User not found",
+    "postNotFound": "Post not found",
+    "gameNotFound": "Game not found",
+    "conversationNotFound": "Conversation not found",
+    "messageNotFound": "Message not found",
+    "fileUploadFailed": "File upload failed",
+    "invalidFileType": "Invalid file type"
+  },
+  "admin": {
+    "userBanned": "User has been banned",
+    "userUnbanned": "User has been unbanned",
+    "userSuspended": "User has been suspended",
+    "postDeleted": "Post has been deleted",
+    "kycApproved": "KYC has been approved",
+    "kycRejected": "KYC has been rejected"
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "minLength": "{{field}} must be at least {{min}} characters",
+    "maxLength": "{{field}} must be at most {{max}} characters",
+    "email": "Please enter a valid email",
+    "phone": "Please enter a valid phone number",
+    "price": "Please enter a valid price",
+    "invalidId": "Invalid ID format"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "languageName": "O'zbek",
+  "auth": {
+    "registered": "Ro'yxatdan o'tish muvaffaqiyatli",
+    "loginSuccess": "Kirish muvaffaqiyatli",
+    "logoutSuccess": "Chiqish muvaffaqiyatli",
+    "invalidCredentials": "Noto'g'ri ma'lumotlar",
+    "tokenExpired": "Sessiya tugadi. Iltimos, qaytadan kiring",
+    "tokenInvalid": "Noto'g'ri token",
+    "accountBanned": "Hisobingiz bloklangan",
+    "accountSuspended": "Hisobingiz to'xtatilgan",
+    "phoneRequired": "Telefon raqami talab qilinadi",
+    "otpSent": "OTP kod yuborildi",
+    "otpInvalid": "Noto'g'ri OTP kod",
+    "otpExpired": "OTP kod muddati tugagan"
+  },
+  "kyc": {
+    "documentUploaded": "Hujjat muvaffaqiyatli yuklandi",
+    "verificationSuccess": "KYC tasdiqlash muvaffaqiyatli",
+    "alreadyVerified": "KYC allaqachon tasdiqlangan",
+    "pendingReview": "Hujjatlar ko'rib chiqish uchun yuborildi",
+    "rejected": "KYC tasdiqlash rad etildi",
+    "required": "KYC tasdiqlash talab qilinadi",
+    "idRequired": "Shaxsni tasdiqlovchi hujjat talab qilinadi",
+    "selfieRequired": "Selfi talab qilinadi",
+    "faceMismatch": "Yuz hujjatdagi rasm bilan mos kelmadi"
+  },
+  "user": {
+    "profileUpdated": "Profil muvaffaqiyatli yangilandi",
+    "avatarUpdated": "Avatar muvaffaqiyatli yangilandi",
+    "locationUpdated": "Joylashuv yangilandi",
+    "accountDeleted": "Hisob muvaffaqiyatli o'chirildi",
+    "notFound": "Foydalanuvchi topilmadi"
+  },
+  "post": {
+    "created": "E'lon muvaffaqiyatli yaratildi",
+    "updated": "E'lon muvaffaqiyatli yangilandi",
+    "deleted": "E'lon muvaffaqiyatli o'chirildi",
+    "statusUpdated": "E'lon holati yangilandi",
+    "imagesAdded": "Rasmlar muvaffaqiyatli qo'shildi",
+    "imageRemoved": "Rasm muvaffaqiyatli o'chirildi",
+    "notFound": "E'lon topilmadi",
+    "maxImages": "Maksimum 5 ta rasm",
+    "minImages": "Kamida 1 ta rasm talab qilinadi"
+  },
+  "message": {
+    "sent": "Xabar yuborildi",
+    "deleted": "Xabar o'chirildi",
+    "conversationDeleted": "Suhbat o'chirildi",
+    "markedAsRead": "Xabarlar o'qilgan deb belgilandi",
+    "notFound": "Xabar topilmadi"
+  },
+  "errors": {
+    "serverError": "Ichki server xatosi",
+    "notFound": "Resurs topilmadi",
+    "unauthorized": "Ruxsatsiz kirish",
+    "forbidden": "Kirish taqiqlangan",
+    "badRequest": "Noto'g'ri so'rov",
+    "validationError": "Tekshiruv xatosi",
+    "tooManyRequests": "Juda ko'p so'rovlar. Keyinroq urinib ko'ring",
+    "kycRequired": "Bu amalni bajarish uchun KYC tasdiqlash talab qilinadi",
+    "userNotFound": "Foydalanuvchi topilmadi",
+    "postNotFound": "E'lon topilmadi",
+    "gameNotFound": "O'yin topilmadi",
+    "conversationNotFound": "Suhbat topilmadi",
+    "messageNotFound": "Xabar topilmadi",
+    "fileUploadFailed": "Fayl yuklash xatosi",
+    "invalidFileType": "Noto'g'ri fayl turi"
+  },
+  "admin": {
+    "userBanned": "Foydalanuvchi bloklandi",
+    "userUnbanned": "Foydalanuvchi blokdan chiqarildi",
+    "userSuspended": "Foydalanuvchi to'xtatildi",
+    "postDeleted": "E'lon o'chirildi",
+    "kycApproved": "KYC tasdiqlandi",
+    "kycRejected": "KYC rad etildi"
+  },
+  "validation": {
+    "required": "{{field}} maydoni majburiy",
+    "minLength": "{{field}} kamida {{min}} ta belgidan iborat bo'lishi kerak",
+    "maxLength": "{{field}} ko'pi bilan {{max}} ta belgidan iborat bo'lishi kerak",
+    "email": "To'g'ri email kiriting",
+    "phone": "To'g'ri telefon raqamini kiriting",
+    "price": "To'g'ri narx kiriting",
+    "invalidId": "Noto'g'ri ID formati"
+  }
+}
