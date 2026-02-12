@@ -4,9 +4,9 @@ const app = require('./src/app');
 const config = require('./src/config');
 const connectDatabase = require('./src/config/database');
 const { connectRedis } = require('./src/config/redis');
-const { initializeFirebase } = require('./src/config/firebase');
 const logger = require('./src/utils/logger');
 const { handleUncaughtException, handleUnhandledRejection } = require('./src/middlewares/errorHandler');
+const subscriptionCleanupService = require('./src/services/subscriptionCleanupService');
 
 // Handle uncaught exceptions
 handleUncaughtException();
@@ -20,8 +20,9 @@ const startServer = async () => {
     const redis = connectRedis();
     await redis.connect();
 
-    // Initialize Firebase (lazy initialization, will be done on first use)
-    // initializeFirebase();
+    // Start subscription cleanup service
+    subscriptionCleanupService.start();
+    logger.info('Subscription cleanup service initialized');
 
     // Start server
     const server = app.listen(config.port, () => {
@@ -40,6 +41,10 @@ const startServer = async () => {
         logger.info('HTTP server closed');
 
         try {
+          // Stop subscription cleanup service
+          subscriptionCleanupService.stop();
+          logger.info('Subscription cleanup service stopped');
+
           // Close Redis connection
           const { disconnectRedis } = require('./src/config/redis');
           await disconnectRedis();

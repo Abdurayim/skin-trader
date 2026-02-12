@@ -8,15 +8,15 @@ const { kycDocumentUpload, handleUploadError } = require('../../middlewares/uplo
 const { authSchemas, userSchemas } = require('../../utils/validators');
 
 /**
- * @route   POST /api/v1/auth/verify-token
- * @desc    Verify Firebase token and login/register user
+ * @route   POST /api/v1/auth/google
+ * @desc    Google OAuth login/register
  * @access  Public
  */
 router.post(
-  '/verify-token',
+  '/google',
   strictRateLimiter,
-  validateBody(authSchemas.verifyOtp),
-  authController.verifyToken
+  validateBody(authSchemas.googleAuth),
+  authController.googleAuth
 );
 
 /**

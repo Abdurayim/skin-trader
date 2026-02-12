@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { USER_STATUS, KYC_STATUS, LANGUAGES, SOCIAL_PLATFORMS } = require('../utils/constants');
+const { USER_STATUS, KYC_STATUS, LANGUAGES, SOCIAL_PLATFORMS, SUBSCRIPTION_STATUS } = require('../utils/constants');
 
 const socialMediaSchema = new mongoose.Schema({
   platform: {
@@ -51,22 +51,16 @@ const locationSchema = new mongoose.Schema({
 }, { _id: false });
 
 const userSchema = new mongoose.Schema({
-  phoneNumber: {
+  googleId: {
     type: String,
     required: true,
     unique: true,
-    index: true,
-    trim: true
-  },
-  isPhoneVerified: {
-    type: Boolean,
-    default: false
-  },
-  firebaseUid: {
-    type: String,
-    unique: true,
-    sparse: true,
     index: true
+  },
+  phoneNumber: {
+    type: String,
+    sparse: true,
+    trim: true
   },
   displayName: {
     type: String,
@@ -75,9 +69,10 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    required: true,
+    unique: true,
     trim: true,
-    lowercase: true,
-    sparse: true
+    lowercase: true
   },
   bio: {
     type: String,
@@ -123,6 +118,28 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // Subscription fields
+  subscriptionStatus: {
+    type: String,
+    enum: Object.values(SUBSCRIPTION_STATUS),
+    default: SUBSCRIPTION_STATUS.NONE,
+    index: true
+  },
+  currentSubscriptionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Subscription'
+  },
+  subscriptionExpiresAt: Date,
+  gracePeriodEndsAt: Date,
+  // Report tracking
+  reportsReceived: {
+    type: Number,
+    default: 0
+  },
+  reportsMade: {
+    type: Number,
+    default: 0
+  },
   // Refresh tokens for multi-device support
   refreshTokens: [{
     token: String,
@@ -160,8 +177,24 @@ userSchema.methods.isKycVerified = function() {
   return this.kycStatus === KYC_STATUS.VERIFIED;
 };
 
+userSchema.methods.hasActiveSubscription = function() {
+  const now = new Date();
+  return this.subscriptionStatus === SUBSCRIPTION_STATUS.ACTIVE &&
+         this.subscriptionExpiresAt &&
+         this.subscriptionExpiresAt > now;
+};
+
+userSchema.methods.isInGracePeriod = function() {
+  const now = new Date();
+  return this.subscriptionStatus === SUBSCRIPTION_STATUS.GRACE_PERIOD &&
+         this.gracePeriodEndsAt &&
+         this.gracePeriodEndsAt > now;
+};
+
 userSchema.methods.canPost = function() {
-  return this.status === USER_STATUS.ACTIVE && this.kycStatus === KYC_STATUS.VERIFIED;
+  return this.status === USER_STATUS.ACTIVE &&
+         this.kycStatus === KYC_STATUS.VERIFIED &&
+         (this.hasActiveSubscription() || this.isInGracePeriod());
 };
 
 userSchema.methods.getPublicProfile = function() {
@@ -177,12 +210,8 @@ userSchema.methods.getPublicProfile = function() {
 };
 
 // Static methods
-userSchema.statics.findByPhone = function(phoneNumber) {
-  return this.findOne({ phoneNumber });
-};
-
-userSchema.statics.findByFirebaseUid = function(firebaseUid) {
-  return this.findOne({ firebaseUid });
+userSchema.statics.findByGoogleId = function(googleId) {
+  return this.findOne({ googleId });
 };
 
 // Middleware

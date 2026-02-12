@@ -1,55 +1,50 @@
 const { User } = require('../models');
-const { firebaseAuthService, kycService, cacheService } = require('../services');
+const { googleAuthService, kycService } = require('../services');
 const { generateTokens, verifyRefreshToken } = require('../middlewares/auth');
 const { successResponse, createdResponse, badRequestResponse, unauthorizedResponse } = require('../utils/response');
 const { asyncHandler } = require('../middlewares/errorHandler');
-const { KYC_STATUS } = require('../utils/constants');
 const logger = require('../utils/logger');
 
 /**
- * Verify Firebase token and create/login user
- * Client handles OTP sending via Firebase SDK
- * POST /api/v1/auth/verify-token
+ * Google OAuth login/register
+ * POST /api/v1/auth/google
  */
-const verifyToken = asyncHandler(async (req, res) => {
-  const { firebaseToken } = req.body;
+const googleAuth = asyncHandler(async (req, res) => {
+  const { idToken } = req.body;
 
-  // Verify Firebase token
-  const firebaseResult = await firebaseAuthService.verifyIdToken(firebaseToken);
-
-  if (!firebaseResult.success) {
-    return badRequestResponse(res, firebaseResult.error);
+  let googleUser;
+  try {
+    googleUser = await googleAuthService.verifyIdToken(idToken);
+  } catch (err) {
+    logger.warn('Google auth failed', { error: err.message });
+    return unauthorizedResponse(res, req.t('auth.googleAuthFailed'));
   }
 
-  const { uid, phoneNumber } = firebaseResult;
+  // Find user by googleId, or fallback by email (link existing account)
+  let user = await User.findOne({ googleId: googleUser.googleId });
 
-  // Find or create user
-  let user = await User.findOne({
-    $or: [
-      { firebaseUid: uid },
-      { phoneNumber }
-    ]
-  });
+  if (!user) {
+    user = await User.findOne({ email: googleUser.email });
+  }
 
   let isNewUser = false;
 
   if (!user) {
-    // Create new user
     user = new User({
-      phoneNumber,
-      firebaseUid: uid,
-      isPhoneVerified: true,
+      googleId: googleUser.googleId,
+      email: googleUser.email,
+      displayName: googleUser.displayName,
+      avatarUrl: googleUser.avatarUrl,
       language: req.language || 'en'
     });
     await user.save();
     isNewUser = true;
-    logger.info('New user created', { userId: user._id, phoneNumber });
+    logger.info('New user created via Google', { userId: user._id, email: googleUser.email });
   } else {
-    // Update existing user
-    if (!user.firebaseUid) {
-      user.firebaseUid = uid;
+    // Link googleId if missing (existing user found by email)
+    if (!user.googleId) {
+      user.googleId = googleUser.googleId;
     }
-    user.isPhoneVerified = true;
     user.lastLoginAt = new Date();
     await user.save();
   }
@@ -76,9 +71,9 @@ const verifyToken = asyncHandler(async (req, res) => {
   const response = {
     user: {
       _id: user._id,
-      phoneNumber: user.phoneNumber,
-      displayName: user.displayName,
       email: user.email,
+      displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
       kycStatus: user.kycStatus,
       language: user.language,
       isNewUser
@@ -162,11 +157,6 @@ const logoutAll = asyncHandler(async (req, res) => {
     refreshTokens: []
   });
 
-  // Revoke Firebase tokens too
-  if (req.user.firebaseUid) {
-    await firebaseAuthService.revokeRefreshTokens(req.user.firebaseUid);
-  }
-
   return successResponse(res, null, 'Logged out from all devices');
 });
 
@@ -246,7 +236,7 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  verifyToken,
+  googleAuth,
   refreshToken,
   logout,
   logoutAll,

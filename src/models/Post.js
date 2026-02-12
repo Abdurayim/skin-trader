@@ -124,6 +124,13 @@ const postSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // Report tracking
+  reportsCount: {
+    type: Number,
+    default: 0,
+    index: true
+  },
+  reportedAt: Date,
   // For soft delete tracking
   deletedAt: Date,
   deletedBy: {

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { User, Admin } = require('../models');
 const { unauthorizedResponse, forbiddenResponse } = require('../utils/response');
-const { ERROR_CODES, KYC_STATUS, USER_STATUS, ADMIN_PERMISSIONS } = require('../utils/constants');
+const { ERROR_CODES, KYC_STATUS, USER_STATUS, ADMIN_PERMISSIONS, SUBSCRIPTION_STATUS } = require('../utils/constants');
 const logger = require('../utils/logger');
 
 /**
@@ -96,7 +96,54 @@ const requireKyc = (req, res, next) => {
   }
 
   if (req.user.kycStatus !== KYC_STATUS.VERIFIED) {
-    return forbiddenResponse(res, 'KYC verification required to perform this action');
+    return forbiddenResponse(res, 'KYC verification required to perform this action', {
+      code: ERROR_CODES.KYC_REQUIRED
+    });
+  }
+
+  next();
+};
+
+/**
+ * Require active subscription
+ * Must be used AFTER authenticateUser and requireKyc
+ */
+const requireActiveSubscription = async (req, res, next) => {
+  if (!req.user) {
+    return unauthorizedResponse(res, 'Authentication required');
+  }
+
+  // Check KYC first
+  if (req.user.kycStatus !== KYC_STATUS.VERIFIED) {
+    return forbiddenResponse(res, 'KYC verification required', {
+      code: ERROR_CODES.KYC_REQUIRED
+    });
+  }
+
+  const now = new Date();
+
+  // Check if user has active subscription
+  const hasActiveSubscription = req.user.subscriptionStatus === SUBSCRIPTION_STATUS.ACTIVE &&
+                                req.user.subscriptionExpiresAt &&
+                                req.user.subscriptionExpiresAt > now;
+
+  // Check if user is in grace period
+  const inGracePeriod = req.user.subscriptionStatus === SUBSCRIPTION_STATUS.GRACE_PERIOD &&
+                        req.user.gracePeriodEndsAt &&
+                        req.user.gracePeriodEndsAt > now;
+
+  if (!hasActiveSubscription && !inGracePeriod) {
+    return forbiddenResponse(res, 'Active subscription required to create posts', {
+      code: ERROR_CODES.SUBSCRIPTION_REQUIRED,
+      subscriptionStatus: req.user.subscriptionStatus || SUBSCRIPTION_STATUS.NONE,
+      subscriptionExpiresAt: req.user.subscriptionExpiresAt
+    });
+  }
+
+  // If in grace period, add warning header
+  if (inGracePeriod) {
+    res.set('X-Grace-Period-Warning', 'true');
+    res.set('X-Grace-Period-Ends', req.user.gracePeriodEndsAt.toISOString());
   }
 
   next();
@@ -226,6 +273,7 @@ module.exports = {
   authenticateUser,
   optionalAuth,
   requireKyc,
+  requireActiveSubscription,
   authenticateAdmin,
   requirePermission,
   requireSuperAdmin,

@@ -67,7 +67,7 @@ const createRateLimiter = (options = {}) => {
  */
 const strictRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: config.rateLimit.otpMax,
+  max: 10,
   keyPrefix: 'rl:strict:',
   message: 'Too many attempts. Please wait 15 minutes before trying again.'
 });

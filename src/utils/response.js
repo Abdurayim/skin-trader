@@ -49,8 +49,8 @@ const unauthorizedResponse = (res, message = 'Unauthorized') => {
   return errorResponse(res, message, 401);
 };
 
-const forbiddenResponse = (res, message = 'Forbidden') => {
-  return errorResponse(res, message, 403);
+const forbiddenResponse = (res, message = 'Forbidden', errors = null) => {
+  return errorResponse(res, message, 403, errors);
 };
 
 const notFoundResponse = (res, message = 'Not found') => {

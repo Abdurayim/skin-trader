@@ -54,7 +54,9 @@ const ADMIN_PERMISSIONS = {
   APPROVE_KYC: 'approve_kyc',
   VIEW_LOGS: 'view_logs',
   VIEW_STATS: 'view_stats',
-  MANAGE_GAMES: 'manage_games'
+  MANAGE_GAMES: 'manage_games',
+  MANAGE_SUBSCRIPTIONS: 'manage_subscriptions',
+  MANAGE_REPORTS: 'manage_reports'
 };
 
 // Role permissions mapping
@@ -66,7 +68,8 @@ const ROLE_PERMISSIONS = {
     ADMIN_PERMISSIONS.VIEW_KYC,
     ADMIN_PERMISSIONS.APPROVE_KYC,
     ADMIN_PERMISSIONS.VIEW_LOGS,
-    ADMIN_PERMISSIONS.VIEW_STATS
+    ADMIN_PERMISSIONS.VIEW_STATS,
+    ADMIN_PERMISSIONS.MANAGE_REPORTS
   ],
   [ADMIN_ROLES.SUPPORT]: [
     ADMIN_PERMISSIONS.VIEW_KYC,
@@ -95,6 +98,7 @@ const ADMIN_ACTIONS = {
   USER_UNBANNED: 'user_unbanned',
   USER_SUSPENDED: 'user_suspended',
   USER_DELETED: 'user_deleted',
+  USER_WARNED: 'user_warned',
 
   // KYC actions
   KYC_APPROVED: 'kyc_approved',
@@ -103,6 +107,14 @@ const ADMIN_ACTIONS = {
   // Post actions
   POST_DELETED: 'post_deleted',
   POST_FLAGGED: 'post_flagged',
+
+  // Subscription actions
+  SUBSCRIPTION_GRANTED: 'subscription_granted',
+  SUBSCRIPTION_REVOKED: 'subscription_revoked',
+
+  // Report actions
+  REPORT_RESOLVED: 'report_resolved',
+  REPORT_DISMISSED: 'report_dismissed',
 
   // Admin actions
   ADMIN_CREATED: 'admin_created',
@@ -172,6 +184,82 @@ const CACHE_KEYS = {
   SEARCH_RESULTS: 'search:'
 };
 
+// Subscription related
+const SUBSCRIPTION_STATUS = {
+  NONE: 'none',
+  ACTIVE: 'active',
+  EXPIRED: 'expired',
+  GRACE_PERIOD: 'grace_period',
+  PENDING: 'pending',
+  CANCELLED: 'cancelled'
+};
+
+const SUBSCRIPTION_PLAN = {
+  MONTHLY: 'monthly'
+};
+
+// Transaction related
+const TRANSACTION_STATUS = {
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
+  FAILED: 'failed',
+  CANCELLED: 'cancelled',
+  REFUNDED: 'refunded'
+};
+
+const PAYMENT_METHOD = {
+  PAYME: 'payme'
+};
+
+// Report related
+const REPORT_TYPE = {
+  POST: 'post',
+  USER: 'user'
+};
+
+const REPORT_CATEGORY = {
+  // Post reports
+  SCAM: 'scam',
+  FAKE_ITEM: 'fake_item',
+  INAPPROPRIATE_CONTENT: 'inappropriate_content',
+  DUPLICATE_POST: 'duplicate_post',
+  INCORRECT_PRICING: 'incorrect_pricing',
+
+  // User reports
+  HARASSMENT: 'harassment',
+  SPAM: 'spam',
+  FRAUD: 'fraud',
+  IMPERSONATION: 'impersonation',
+  OFFENSIVE_PROFILE: 'offensive_profile',
+
+  // General
+  OTHER: 'other'
+};
+
+const REPORT_STATUS = {
+  PENDING: 'pending',
+  UNDER_REVIEW: 'under_review',
+  RESOLVED: 'resolved',
+  DISMISSED: 'dismissed'
+};
+
+const REPORT_PRIORITY = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+  CRITICAL: 'critical'
+};
+
+const REPORT_ACTION = {
+  DISMISS: 'dismiss',
+  DELETE_POST: 'delete_post',
+  WARN_USER: 'warn_user',
+  SUSPEND_USER: 'suspend_user',
+  BAN_USER: 'ban_user',
+  DELETE_USER: 'delete_user'
+};
+
 // Error codes
 const ERROR_CODES = {
   // Auth errors
@@ -193,6 +281,15 @@ const ERROR_CODES = {
   KYC_PENDING: 'KYC_PENDING',
   KYC_REJECTED: 'KYC_REJECTED',
   FACE_MISMATCH: 'FACE_MISMATCH',
+
+  // Subscription errors
+  SUBSCRIPTION_REQUIRED: 'SUBSCRIPTION_REQUIRED',
+  SUBSCRIPTION_EXPIRED: 'SUBSCRIPTION_EXPIRED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+
+  // Report errors
+  DUPLICATE_REPORT: 'DUPLICATE_REPORT',
+  REPORT_LIMIT_EXCEEDED: 'REPORT_LIMIT_EXCEEDED',
 
   // Rate limit
   RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
@@ -218,5 +315,14 @@ module.exports = {
   GAME_GENRES,
   SOCIAL_PLATFORMS,
   CACHE_KEYS,
-  ERROR_CODES
+  ERROR_CODES,
+  SUBSCRIPTION_STATUS,
+  SUBSCRIPTION_PLAN,
+  TRANSACTION_STATUS,
+  PAYMENT_METHOD,
+  REPORT_TYPE,
+  REPORT_CATEGORY,
+  REPORT_STATUS,
+  REPORT_PRIORITY,
+  REPORT_ACTION
 };

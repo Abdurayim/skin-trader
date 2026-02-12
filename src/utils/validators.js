@@ -45,12 +45,8 @@ const offsetPaginationSchema = Joi.object({
  * Auth validation schemas
  */
 const authSchemas = {
-  sendOtp: Joi.object({
-    phoneNumber: phoneNumberSchema.required()
-  }),
-
-  verifyOtp: Joi.object({
-    firebaseToken: Joi.string().required()
+  googleAuth: Joi.object({
+    idToken: Joi.string().required()
   }),
 
   refreshToken: Joi.object({

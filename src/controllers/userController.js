@@ -200,11 +200,6 @@ const deleteAccount = asyncHandler(async (req, res) => {
     }
   );
 
-  // Delete Firebase user if exists
-  if (user.firebaseUid) {
-    await require('../services/firebaseAuthService').deleteUser(user.firebaseUid);
-  }
-
   // Delete user
   await User.findByIdAndDelete(req.userId);
 

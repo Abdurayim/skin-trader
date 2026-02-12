@@ -105,14 +105,26 @@ class KycService {
         };
       }
 
-      // Perform face comparison
+      // In development, auto-approve without face comparison
+      if (config.env !== 'production') {
+        user.kycStatus = KYC_STATUS.VERIFIED;
+        user.kycVerifiedAt = new Date();
+        user.faceMatchScore = 1.0;
+        user.kycDocuments.forEach(doc => { doc.verifiedAt = new Date(); });
+        await user.save();
+        await cacheService.invalidateUserCache(userId);
+
+        logger.info('KYC auto-approved (dev mode)', { userId });
+        return { success: true, verified: true, score: 1.0 };
+      }
+
+      // Perform face comparison (production)
       const verificationResult = await faceCompareService.verifyKyc(
         idDocument.filePath,
         selfie.filePath
       );
 
       if (!verificationResult.success) {
-        // Mark as pending for manual review
         user.kycStatus = KYC_STATUS.PENDING;
         await user.save();
 
@@ -129,23 +141,14 @@ class KycService {
       }
 
       if (verificationResult.verified) {
-        // Auto-approve
         user.kycStatus = KYC_STATUS.VERIFIED;
         user.kycVerifiedAt = new Date();
         user.faceMatchScore = verificationResult.score;
-
-        // Mark documents as verified
-        user.kycDocuments.forEach(doc => {
-          doc.verifiedAt = new Date();
-        });
-
+        user.kycDocuments.forEach(doc => { doc.verifiedAt = new Date(); });
         await user.save();
         await cacheService.invalidateUserCache(userId);
 
-        logger.info('KYC auto-verified', {
-          userId,
-          score: verificationResult.score
-        });
+        logger.info('KYC auto-verified', { userId, score: verificationResult.score });
 
         return {
           success: true,
@@ -154,7 +157,6 @@ class KycService {
           details: verificationResult.details
         };
       } else {
-        // Face mismatch - mark for manual review
         user.kycStatus = KYC_STATUS.PENDING;
         user.faceMatchScore = verificationResult.score;
         await user.save();
@@ -296,7 +298,7 @@ class KycService {
 
       const [users, total] = await Promise.all([
         User.find({ kycStatus: KYC_STATUS.PENDING })
-          .select('displayName phoneNumber kycDocuments kycStatus faceMatchScore createdAt')
+          .select('displayName email kycDocuments kycStatus faceMatchScore createdAt')
           .sort({ createdAt: 1 }) // Oldest first
           .skip(skip)
           .limit(limit)

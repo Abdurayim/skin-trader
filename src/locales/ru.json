@@ -9,10 +9,7 @@
     "tokenInvalid": "Недействительный токен",
     "accountBanned": "Ваш аккаунт заблокирован",
     "accountSuspended": "Ваш аккаунт приостановлен",
-    "phoneRequired": "Требуется номер телефона",
-    "otpSent": "OTP код отправлен",
-    "otpInvalid": "Неверный OTP код",
-    "otpExpired": "OTP код истек"
+    "googleAuthFailed": "Ошибка аутентификации Google. Попробуйте ещё раз"
   },
   "kyc": {
     "documentUploaded": "Документ загружен успешно",

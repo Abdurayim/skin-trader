@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { adminController } = require('../../controllers');
+const adminSubscriptionController = require('../../controllers/adminSubscriptionController');
+const adminReportController = require('../../controllers/adminReportController');
 const { authenticateAdmin, requirePermission, requireSuperAdmin } = require('../../middlewares/auth');
 const { validateBody, validateObjectId, validateQuery } = require('../../middlewares/validation');
 const { strictRateLimiter, adminRateLimiter } = require('../../middlewares/rateLimiter');
 const { adminSchemas, gameSchemas, offsetPaginationSchema } = require('../../utils/validators');
 const { ADMIN_PERMISSIONS } = require('../../utils/constants');
+const Joi = require('joi');
 
 /**
  * @route   POST /api/v1/admin/login
@@ -221,6 +224,175 @@ router.put(
   validateObjectId('id'),
   validateBody(gameSchemas.update),
   adminController.updateGame
+);
+
+// ============================================
+// SUBSCRIPTION MANAGEMENT ROUTES
+// ============================================
+
+/**
+ * @route   GET /api/v1/admin/subscriptions
+ * @desc    Get all subscriptions with filters
+ * @access  Private (Admin - Manage Subscriptions)
+ */
+router.get(
+  '/subscriptions',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_SUBSCRIPTIONS),
+  adminSubscriptionController.getAllSubscriptions
+);
+
+/**
+ * @route   GET /api/v1/admin/subscriptions/stats
+ * @desc    Get subscription statistics
+ * @access  Private (Admin - View Stats)
+ */
+router.get(
+  '/subscriptions/stats',
+  requirePermission(ADMIN_PERMISSIONS.VIEW_STATS),
+  adminSubscriptionController.getSubscriptionStats
+);
+
+/**
+ * @route   POST /api/v1/admin/subscriptions/grant
+ * @desc    Grant free subscription to user
+ * @access  Private (Admin - Manage Subscriptions)
+ */
+const grantSubscriptionSchema = Joi.object({
+  userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+  durationDays: Joi.number().integer().min(1).max(365).optional()
+});
+
+router.post(
+  '/subscriptions/grant',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_SUBSCRIPTIONS),
+  validateBody(grantSubscriptionSchema),
+  adminSubscriptionController.grantFreeSubscription
+);
+
+/**
+ * @route   POST /api/v1/admin/subscriptions/:id/revoke
+ * @desc    Revoke subscription
+ * @access  Private (Admin - Manage Subscriptions)
+ */
+const revokeSubscriptionSchema = Joi.object({
+  reason: Joi.string().max(500).optional()
+});
+
+router.post(
+  '/subscriptions/:id/revoke',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_SUBSCRIPTIONS),
+  validateObjectId('id'),
+  validateBody(revokeSubscriptionSchema),
+  adminSubscriptionController.revokeSubscription
+);
+
+/**
+ * @route   GET /api/v1/admin/transactions
+ * @desc    Get all transactions
+ * @access  Private (Admin - Manage Subscriptions)
+ */
+router.get(
+  '/transactions',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_SUBSCRIPTIONS),
+  adminSubscriptionController.getAllTransactions
+);
+
+// ============================================
+// REPORT MANAGEMENT ROUTES
+// ============================================
+
+/**
+ * @route   GET /api/v1/admin/reports
+ * @desc    Get all reports with filters
+ * @access  Private (Admin - Manage Reports)
+ */
+router.get(
+  '/reports',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_REPORTS),
+  adminReportController.getAllReports
+);
+
+/**
+ * @route   GET /api/v1/admin/reports/stats
+ * @desc    Get report statistics
+ * @access  Private (Admin - View Stats)
+ */
+router.get(
+  '/reports/stats',
+  requirePermission(ADMIN_PERMISSIONS.VIEW_STATS),
+  adminReportController.getReportStats
+);
+
+/**
+ * @route   GET /api/v1/admin/reports/:id
+ * @desc    Get report details
+ * @access  Private (Admin - Manage Reports)
+ */
+router.get(
+  '/reports/:id',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_REPORTS),
+  validateObjectId('id'),
+  adminReportController.getReportDetails
+);
+
+/**
+ * @route   PATCH /api/v1/admin/reports/:id/status
+ * @desc    Update report status
+ * @access  Private (Admin - Manage Reports)
+ */
+const updateReportStatusSchema = Joi.object({
+  status: Joi.string().valid('pending', 'under_review', 'resolved', 'dismissed').required()
+});
+
+router.patch(
+  '/reports/:id/status',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_REPORTS),
+  validateObjectId('id'),
+  validateBody(updateReportStatusSchema),
+  adminReportController.updateReportStatus
+);
+
+/**
+ * @route   POST /api/v1/admin/reports/:id/resolve
+ * @desc    Resolve report with action
+ * @access  Private (Admin - Manage Reports)
+ */
+const resolveReportSchema = Joi.object({
+  action: Joi.string().valid(
+    'dismiss',
+    'delete_post',
+    'warn_user',
+    'suspend_user',
+    'ban_user',
+    'delete_user'
+  ).required(),
+  notes: Joi.string().max(2000).optional(),
+  adminNotes: Joi.string().max(2000).optional()
+});
+
+router.post(
+  '/reports/:id/resolve',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_REPORTS),
+  validateObjectId('id'),
+  validateBody(resolveReportSchema),
+  adminReportController.resolveReport
+);
+
+/**
+ * @route   POST /api/v1/admin/reports/:id/dismiss
+ * @desc    Dismiss report
+ * @access  Private (Admin - Manage Reports)
+ */
+const dismissReportSchema = Joi.object({
+  reason: Joi.string().max(500).optional()
+});
+
+router.post(
+  '/reports/:id/dismiss',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_REPORTS),
+  validateObjectId('id'),
+  validateBody(dismissReportSchema),
+  adminReportController.dismissReport
 );
 
 module.exports = router;

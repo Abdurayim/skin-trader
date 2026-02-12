@@ -23,8 +23,9 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const corsOrigin = process.env.CORS_ORIGIN || '*';
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+  origin: corsOrigin === '*' ? '*' : corsOrigin.split(',').map(s => s.trim()),
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept-Language'],
   credentials: true
@@ -42,6 +43,15 @@ app.use(sanitizeBody);
 
 // Request logging
 app.use(requestLogger);
+
+// Debug middleware - log all incoming requests
+app.use((req, res, next) => {
+  console.log(`[DEBUG] ${req.method} ${req.url} - Headers:`, {
+    contentType: req.get('content-type'),
+    authorization: req.get('authorization') ? 'Present' : 'Missing'
+  });
+  next();
+});
 
 // Language detection
 app.use(languageMiddleware);

@@ -42,3 +42,7 @@ temp/
 
 # Test
 .nyc_output/
+
+# Local documentation (not for GitHub)
+FRONTEND_INTEGRATION.md
+progress.md

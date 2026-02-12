@@ -4,6 +4,9 @@ const postController = require('./postController');
 const gameController = require('./gameController');
 const messageController = require('./messageController');
 const adminController = require('./adminController');
+const subscriptionController = require('./subscriptionController');
+const paymentController = require('./paymentController');
+const reportController = require('./reportController');
 
 module.exports = {
   authController,
@@ -11,5 +14,8 @@ module.exports = {
   postController,
   gameController,
   messageController,
-  adminController
+  adminController,
+  subscriptionController,
+  paymentController,
+  reportController
 };

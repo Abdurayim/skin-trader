@@ -1,13 +1,13 @@
-const firebaseAuthService = require('./firebaseAuthService');
 const cacheService = require('./cacheService');
 const imageService = require('./imageService');
 const faceCompareService = require('./faceCompareService');
 const kycService = require('./kycService');
+const googleAuthService = require('./googleAuthService');
 
 module.exports = {
-  firebaseAuthService,
   cacheService,
   imageService,
   faceCompareService,
-  kycService
+  kycService,
+  googleAuthService
 };

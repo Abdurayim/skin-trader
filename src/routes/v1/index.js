@@ -7,6 +7,9 @@ const postRoutes = require('./posts');
 const gameRoutes = require('./games');
 const messageRoutes = require('./messages');
 const adminRoutes = require('./admin');
+const subscriptionRoutes = require('./subscriptions');
+const paymentRoutes = require('./payments');
+const reportRoutes = require('./reports');
 
 // API Health check
 router.get('/health', (req, res) => {
@@ -25,5 +28,8 @@ router.use('/posts', postRoutes);
 router.use('/games', gameRoutes);
 router.use('/messages', messageRoutes);
 router.use('/admin', adminRoutes);
+router.use('/subscriptions', subscriptionRoutes);
+router.use('/payments', paymentRoutes);
+router.use('/reports', reportRoutes);
 
 module.exports = router;

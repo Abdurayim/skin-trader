@@ -9,10 +9,7 @@
     "tokenInvalid": "Noto'g'ri token",
     "accountBanned": "Hisobingiz bloklangan",
     "accountSuspended": "Hisobingiz to'xtatilgan",
-    "phoneRequired": "Telefon raqami talab qilinadi",
-    "otpSent": "OTP kod yuborildi",
-    "otpInvalid": "Noto'g'ri OTP kod",
-    "otpExpired": "OTP kod muddati tugagan"
+    "googleAuthFailed": "Google autentifikatsiya xatosi. Qayta urinib ko'ring"
   },
   "kyc": {
     "documentUploaded": "Hujjat muvaffaqiyatli yuklandi",

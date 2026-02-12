@@ -21,6 +21,12 @@ class AppError extends Error {
  * Not found error handler (404)
  */
 const notFoundHandler = (req, res, next) => {
+  console.log(`[404 ERROR] ${req.method} ${req.originalUrl}`, {
+    baseUrl: req.baseUrl,
+    path: req.path,
+    params: req.params,
+    query: req.query
+  });
   const error = new AppError(`Not found: ${req.originalUrl}`, 404, 'NOT_FOUND');
   next(error);
 };

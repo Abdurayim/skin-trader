@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { postController } = require('../../controllers');
-const { authenticateUser, optionalAuth, requireKyc } = require('../../middlewares/auth');
+const { authenticateUser, optionalAuth, requireKyc, requireActiveSubscription } = require('../../middlewares/auth');
 const { validateBody, validateQuery, validateObjectId } = require('../../middlewares/validation');
 const { postImageUpload, handleUploadError, requireFiles, cleanupOnError } = require('../../middlewares/upload');
 const { uploadRateLimiter, searchRateLimiter } = require('../../middlewares/rateLimiter');
@@ -44,12 +44,13 @@ router.get(
 /**
  * @route   POST /api/v1/posts
  * @desc    Create new post
- * @access  Private (KYC required)
+ * @access  Private (KYC and Active Subscription required)
  */
 router.post(
   '/',
   authenticateUser,
   requireKyc,
+  requireActiveSubscription,
   uploadRateLimiter,
   postImageUpload.array('images', 5),
   handleUploadError,

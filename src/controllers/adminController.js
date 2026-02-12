@@ -4,8 +4,38 @@ const { generateTokens, verifyRefreshToken } = require('../middlewares/auth');
 const { successResponse, badRequestResponse, notFoundResponse, unauthorizedResponse } = require('../utils/response');
 const { asyncHandler } = require('../middlewares/errorHandler');
 const { offsetPaginate } = require('../utils/pagination');
-const { ADMIN_ACTIONS, USER_STATUS, POST_STATUS } = require('../utils/constants');
+const { ADMIN_ACTIONS, ADMIN_ROLES, ROLE_PERMISSIONS, USER_STATUS, POST_STATUS } = require('../utils/constants');
 const logger = require('../utils/logger');
+
+/**
+ * Check if credentials match the .env superadmin and ensure they exist in DB.
+ * Returns the admin document if matched, null otherwise.
+ */
+async function getOrCreateEnvAdmin(email, password) {
+  const envEmail = process.env.ADMIN_EMAIL;
+  const envPassword = process.env.ADMIN_PASSWORD;
+
+  if (!envEmail || !envPassword) return null;
+  if (email.toLowerCase() !== envEmail.toLowerCase() || password !== envPassword) return null;
+
+  // Credentials match .env — find or create the superadmin in DB
+  let admin = await Admin.findOne({ email: envEmail.toLowerCase() }).select('+password');
+
+  if (!admin) {
+    admin = new Admin({
+      email: envEmail.toLowerCase(),
+      password: envPassword,
+      name: process.env.ADMIN_NAME || 'Super Admin',
+      role: ADMIN_ROLES.SUPER_ADMIN,
+      permissions: ROLE_PERMISSIONS[ADMIN_ROLES.SUPER_ADMIN],
+      isActive: true
+    });
+    await admin.save();
+    logger.info('Auto-created superadmin from .env', { email: envEmail });
+  }
+
+  return admin;
+}
 
 /**
  * Admin login
@@ -14,20 +44,26 @@ const logger = require('../utils/logger');
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const admin = await Admin.findByEmail(email);
+  // First check if credentials match .env superadmin (auto-creates if needed)
+  let admin = await getOrCreateEnvAdmin(email, password);
 
   if (!admin) {
-    return unauthorizedResponse(res, 'Invalid credentials');
-  }
+    // Fallback to normal DB lookup
+    admin = await Admin.findByEmail(email);
 
-  if (!admin.isActive) {
-    return unauthorizedResponse(res, 'Account is deactivated');
-  }
+    if (!admin) {
+      return unauthorizedResponse(res, 'Invalid credentials');
+    }
 
-  const isMatch = await admin.comparePassword(password);
+    if (!admin.isActive) {
+      return unauthorizedResponse(res, 'Account is deactivated');
+    }
 
-  if (!isMatch) {
-    return unauthorizedResponse(res, 'Invalid credentials');
+    const isMatch = await admin.comparePassword(password);
+
+    if (!isMatch) {
+      return unauthorizedResponse(res, 'Invalid credentials');
+    }
   }
 
   // Generate tokens
@@ -141,9 +177,8 @@ const getUsers = asyncHandler(async (req, res) => {
   if (kycStatus) query.kycStatus = kycStatus;
   if (search) {
     query.$or = [
-      { phoneNumber: { $regex: search, $options: 'i' } },
-      { displayName: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } }
+      { email: { $regex: search, $options: 'i' } },
+      { displayName: { $regex: search, $options: 'i' } }
     ];
   }
 
@@ -249,7 +284,7 @@ const getPosts = asyncHandler(async (req, res) => {
     sortBy: sortBy || 'createdAt',
     sortOrder: sortOrder === 'asc' ? 1 : -1,
     populate: [
-      { path: 'userId', select: 'displayName phoneNumber' },
+      { path: 'userId', select: 'displayName email' },
       { path: 'gameId', select: 'name slug' }
     ]
   });

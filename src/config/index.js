@@ -24,14 +24,9 @@ const config = {
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES || '7d'
   },
 
-  // Firebase
-  firebase: {
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    privateKeyId: process.env.FIREBASE_PRIVATE_KEY_ID,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    clientId: process.env.FIREBASE_CLIENT_ID,
-    certUrl: process.env.FIREBASE_CERT_URL
+  // Google OAuth
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID
   },
 
   // Upload
@@ -45,8 +40,7 @@ const config = {
   // Rate Limiting
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW, 10) || 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100,
-    otpMax: parseInt(process.env.OTP_RATE_LIMIT_MAX, 10) || 5
+    max: parseInt(process.env.RATE_LIMIT_MAX, 10) || 100
   },
 
   // Cache TTL (in seconds)
@@ -82,9 +76,7 @@ if (config.env === 'production') {
   const required = [
     'MONGODB_URI',
     'JWT_SECRET',
-    'FIREBASE_PROJECT_ID',
-    'FIREBASE_PRIVATE_KEY',
-    'FIREBASE_CLIENT_EMAIL'
+    'GOOGLE_CLIENT_ID'
   ];
 
   const missing = required.filter(key => !process.env[key]);

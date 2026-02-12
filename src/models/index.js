@@ -5,6 +5,9 @@ const Game = require('./Game');
 const Message = require('./Message');
 const Conversation = require('./Conversation');
 const AdminLog = require('./AdminLog');
+const Subscription = require('./Subscription');
+const Transaction = require('./Transaction');
+const Report = require('./Report');
 
 module.exports = {
   User,
@@ -13,5 +16,8 @@ module.exports = {
   Game,
   Message,
   Conversation,
-  AdminLog
+  AdminLog,
+  Subscription,
+  Transaction,
+  Report
 };

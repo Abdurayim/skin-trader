@@ -9,10 +9,7 @@
     "tokenInvalid": "Invalid token",
     "accountBanned": "Your account has been banned",
     "accountSuspended": "Your account is suspended",
-    "phoneRequired": "Phone number is required",
-    "otpSent": "OTP sent successfully",
-    "otpInvalid": "Invalid OTP code",
-    "otpExpired": "OTP has expired"
+    "googleAuthFailed": "Google authentication failed. Please try again"
   },
   "kyc": {
     "documentUploaded": "Document uploaded successfully",
