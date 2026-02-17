@@ -56,6 +56,11 @@ app.use((req, res, next) => {
 // Language detection
 app.use(languageMiddleware);
 
+// Block direct access to KYC uploads (served via authenticated admin endpoint)
+app.use('/uploads/kyc', (req, res) => {
+  res.status(403).json({ success: false, message: 'Access denied' });
+});
+
 // Static files for uploads
 app.use('/uploads', express.static(path.join(process.cwd(), config.upload.uploadDir)));
 

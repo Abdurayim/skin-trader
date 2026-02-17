@@ -33,7 +33,7 @@ const config = {
   upload: {
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE, 10) || 5 * 1024 * 1024, // 5MB
     maxFiles: parseInt(process.env.MAX_FILES, 10) || 5,
-    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'],
     uploadDir: process.env.UPLOAD_DIR || 'uploads'
   },
 

@@ -109,7 +109,7 @@ const getReportDetails = asyncHandler(async (req, res) => {
 const updateReportStatus = asyncHandler(async (req, res) => {
   const { id: reportId } = req.params;
   const { status } = req.body;
-  const adminId = req.admin._id;
+  const adminId = req.adminId;
 
   if (!Object.values(REPORT_STATUS).includes(status)) {
     return badRequestResponse(res, 'Invalid status');
@@ -153,7 +153,7 @@ const updateReportStatus = asyncHandler(async (req, res) => {
 const resolveReport = asyncHandler(async (req, res) => {
   const { id: reportId } = req.params;
   const { action, notes, adminNotes } = req.body;
-  const adminId = req.admin._id;
+  const adminId = req.adminId;
 
   if (!Object.values(REPORT_ACTION).includes(action)) {
     return badRequestResponse(res, 'Invalid action');
@@ -237,7 +237,7 @@ const resolveReport = asyncHandler(async (req, res) => {
 const dismissReport = asyncHandler(async (req, res) => {
   const { id: reportId } = req.params;
   const { reason } = req.body;
-  const adminId = req.admin._id;
+  const adminId = req.adminId;
 
   const report = await Report.findById(reportId);
   if (!report) {
@@ -321,8 +321,16 @@ const getReportStats = asyncHandler(async (req, res) => {
     ? (resolutionTime[0].avgResolutionTime / (1000 * 60 * 60)).toFixed(2)
     : 0;
 
+  // Convert byStatus array to flat object for frontend
+  const statusCounts = {};
+  byStatus.forEach(item => {
+    // Convert snake_case status to camelCase (e.g., under_review → underReview)
+    const key = item._id.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+    statusCounts[key] = item.count;
+  });
+
   return successResponse(res, {
-    byStatus,
+    ...statusCounts,
     byCategory,
     byPriority,
     avgResolutionHours: parseFloat(avgResolutionHours)

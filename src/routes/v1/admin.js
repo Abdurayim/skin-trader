@@ -40,7 +40,7 @@ router.post(
  */
 router.post(
   '/refresh-token',
-  validateBody(adminSchemas.refreshToken || { refreshToken: { type: 'string' } }),
+  validateBody(adminSchemas.refreshToken),
   adminController.refreshToken
 );
 
@@ -155,6 +155,17 @@ router.patch(
 );
 
 /**
+ * @route   GET /api/v1/admin/kyc/image/:filename
+ * @desc    Serve KYC document image to authenticated admin
+ * @access  Private (Admin)
+ */
+router.get(
+  '/kyc/image/:filename',
+  requirePermission(ADMIN_PERMISSIONS.VIEW_KYC),
+  adminController.serveKycImage
+);
+
+/**
  * @route   GET /api/v1/admin/logs
  * @desc    Get admin activity logs
  * @access  Private (Admin)
@@ -199,6 +210,17 @@ router.put(
   validateObjectId('id'),
   validateBody(adminSchemas.updateAdmin),
   adminController.updateAdmin
+);
+
+/**
+ * @route   GET /api/v1/admin/games
+ * @desc    Get all games (including inactive)
+ * @access  Private (Admin)
+ */
+router.get(
+  '/games',
+  requirePermission(ADMIN_PERMISSIONS.MANAGE_GAMES),
+  adminController.getGames
 );
 
 /**

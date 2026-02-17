@@ -55,18 +55,15 @@ const imageFilter = (req, file, cb) => {
 };
 
 /**
- * File filter for KYC documents (includes PDF)
+ * File filter for KYC documents (images only — sharp cannot process PDFs)
  */
 const kycDocumentFilter = (req, file, cb) => {
-  const allowedMimes = [
-    ...config.upload.allowedMimeTypes,
-    'application/pdf'
-  ];
+  const allowedMimes = config.upload.allowedMimeTypes;
 
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type for KYC document'), false);
+    cb(new Error(`Invalid file type for KYC document. Accepted: ${allowedMimes.join(', ')}`), false);
   }
 };
 

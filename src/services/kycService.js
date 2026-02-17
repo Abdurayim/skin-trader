@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const { User } = require('../models');
 const imageService = require('./imageService');
 const faceCompareService = require('./faceCompareService');
@@ -34,8 +36,15 @@ class KycService {
       const processed = await imageService.processKycImage(file.path);
 
       if (!processed.success) {
+        // Cleanup orphaned file on processing failure
+        try { fs.unlinkSync(file.path); } catch (e) { /* ignore */ }
         return { success: false, error: 'Failed to process document image' };
       }
+
+      // Normalize to relative path so frontend URLs work consistently
+      const relativePath = path.isAbsolute(file.path)
+        ? path.relative(process.cwd(), file.path)
+        : file.path;
 
       // Remove existing document of same type
       user.kycDocuments = user.kycDocuments.filter(doc => doc.type !== documentType);
@@ -43,7 +52,7 @@ class KycService {
       // Add new document
       user.kycDocuments.push({
         type: documentType,
-        filePath: file.path,
+        filePath: relativePath,
         uploadedAt: new Date()
       });
 
@@ -71,6 +80,10 @@ class KycService {
         documentsCount: user.kycDocuments.length
       };
     } catch (error) {
+      // Cleanup uploaded file on unexpected error
+      if (file && file.path) {
+        try { fs.unlinkSync(file.path); } catch (e) { /* ignore */ }
+      }
       logger.error('KYC document upload error:', { userId, error: error.message });
       return { success: false, error: error.message };
     }

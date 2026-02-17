@@ -7,6 +7,8 @@ const adminController = require('./adminController');
 const subscriptionController = require('./subscriptionController');
 const paymentController = require('./paymentController');
 const reportController = require('./reportController');
+const adminSubscriptionController = require('./adminSubscriptionController');
+const adminReportController = require('./adminReportController');
 
 module.exports = {
   authController,
@@ -17,5 +19,7 @@ module.exports = {
   adminController,
   subscriptionController,
   paymentController,
-  reportController
+  reportController,
+  adminSubscriptionController,
+  adminReportController
 };

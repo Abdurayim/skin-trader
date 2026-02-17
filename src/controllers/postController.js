@@ -161,7 +161,7 @@ const getPost = asyncHandler(async (req, res) => {
  */
 const updatePost = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, description, price, currency, genre, contactInfo } = req.body;
+  const { title, description, price, currency, gameId, genre, type, contactInfo } = req.body;
 
   const post = await Post.findOne({
     _id: id,
@@ -173,12 +173,22 @@ const updatePost = asyncHandler(async (req, res) => {
     return notFoundResponse(res, req.t('errors.postNotFound'));
   }
 
+  // Verify game exists if changing it
+  if (gameId !== undefined && gameId !== post.gameId?.toString()) {
+    const game = await Game.findById(gameId);
+    if (!game || !game.isActive) {
+      return badRequestResponse(res, req.t('errors.gameNotFound'));
+    }
+  }
+
   // Update fields
   if (title !== undefined) post.title = title;
   if (description !== undefined) post.description = description;
   if (price !== undefined) post.price = price;
   if (currency !== undefined) post.currency = currency;
+  if (gameId !== undefined) post.gameId = gameId;
   if (genre !== undefined) post.genre = genre;
+  if (type !== undefined) post.type = type;
   if (contactInfo !== undefined) {
     post.contactInfo = typeof contactInfo === 'string' ? JSON.parse(contactInfo) : contactInfo;
   }

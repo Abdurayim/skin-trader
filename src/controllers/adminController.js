@@ -1,10 +1,13 @@
+const path = require('path');
+const fs = require('fs');
 const { Admin, User, Post, Game, AdminLog } = require('../models');
 const { kycService, cacheService } = require('../services');
 const { generateTokens, verifyRefreshToken } = require('../middlewares/auth');
-const { successResponse, badRequestResponse, notFoundResponse, unauthorizedResponse } = require('../utils/response');
+const { successResponse, badRequestResponse, notFoundResponse, unauthorizedResponse, forbiddenResponse } = require('../utils/response');
 const { asyncHandler } = require('../middlewares/errorHandler');
 const { offsetPaginate } = require('../utils/pagination');
 const { ADMIN_ACTIONS, ADMIN_ROLES, ROLE_PERMISSIONS, USER_STATUS, POST_STATUS } = require('../utils/constants');
+const config = require('../config');
 const logger = require('../utils/logger');
 
 /**
@@ -445,11 +448,25 @@ const getStats = asyncHandler(async (req, res) => {
     createdAt: { $gte: weekAgo }
   });
 
-  // Recent posts (last 7 days)
-  const recentPosts = await Post.countDocuments({
+  // Recent posts count (last 7 days)
+  const recentPostsCount = await Post.countDocuments({
     createdAt: { $gte: weekAgo },
     deletedAt: { $exists: false }
   });
+
+  // Recent users list (last 5)
+  const recentUsers = await User.find()
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select('displayName email avatarUrl createdAt')
+    .lean();
+
+  // Recent posts list (last 5)
+  const recentPosts = await Post.find({ deletedAt: { $exists: false } })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select('title price status images createdAt')
+    .lean();
 
   return successResponse(res, {
     stats: {
@@ -462,11 +479,13 @@ const getStats = asyncHandler(async (req, res) => {
       posts: {
         total: totalPosts,
         active: activePosts,
-        recent: recentPosts
+        recent: recentPostsCount
       },
       games: {
         total: totalGames
-      }
+      },
+      recentUsers,
+      recentPosts
     }
   });
 });
@@ -556,6 +575,30 @@ const updateAdmin = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Get all games (admin)
+ * GET /api/v1/admin/games
+ */
+const getGames = asyncHandler(async (req, res) => {
+  const { page, limit, sortBy, sortOrder, search, isActive } = req.query;
+
+  const query = {};
+
+  if (isActive !== undefined) query.isActive = isActive === 'true';
+  if (search) {
+    query.name = { $regex: search, $options: 'i' };
+  }
+
+  const { documents, pagination } = await offsetPaginate(Game, query, {
+    page: parseInt(page) || 1,
+    limit: parseInt(limit) || 50,
+    sortBy: sortBy || 'name',
+    sortOrder: sortOrder === 'desc' ? -1 : 1
+  });
+
+  return successResponse(res, { games: documents, pagination });
+});
+
+/**
  * Create game (admin)
  * POST /api/v1/admin/games
  */
@@ -624,6 +667,28 @@ const updateGame = asyncHandler(async (req, res) => {
   return successResponse(res, { game }, 'Game updated');
 });
 
+/**
+ * Serve KYC image to authenticated admin
+ * GET /api/v1/admin/kyc/image/:filename
+ */
+const serveKycImage = asyncHandler(async (req, res) => {
+  const { filename } = req.params;
+
+  // Sanitize filename — prevent path traversal
+  const sanitized = path.basename(filename);
+  if (sanitized !== filename || filename.includes('..')) {
+    return forbiddenResponse(res, 'Invalid filename');
+  }
+
+  const filePath = path.join(process.cwd(), config.upload.uploadDir, 'kyc', sanitized);
+
+  if (!fs.existsSync(filePath)) {
+    return notFoundResponse(res, 'Image not found');
+  }
+
+  return res.sendFile(filePath);
+});
+
 module.exports = {
   login,
   logout,
@@ -641,6 +706,8 @@ module.exports = {
   createAdmin,
   getAdmins,
   updateAdmin,
+  getGames,
   createGame,
-  updateGame
+  updateGame,
+  serveKycImage
 };

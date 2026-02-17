@@ -107,7 +107,9 @@ const postSchemas = {
     description: Joi.string().min(10).max(2000).trim(),
     price: Joi.number().min(0),
     currency: Joi.string().valid(...Object.values(CURRENCIES)),
+    gameId: objectIdSchema,
     genre: Joi.string().max(50).trim(),
+    type: Joi.string().valid(...Object.values(POST_TYPE)),
     contactInfo: Joi.object({
       phone: phoneNumberSchema,
       email: Joi.string().email(),
@@ -123,7 +125,7 @@ const postSchemas = {
     status: Joi.string().valid(...Object.values(POST_STATUS)).required()
   }),
 
-  search: Joi.object({
+  search: paginationSchema.keys({
     q: Joi.string().min(1).max(100).trim(),
     gameId: objectIdSchema,
     genre: Joi.string().max(50),
@@ -131,8 +133,7 @@ const postSchemas = {
     minPrice: Joi.number().min(0),
     maxPrice: Joi.number().min(0),
     currency: Joi.string().valid(...Object.values(CURRENCIES)),
-    status: Joi.string().valid(...Object.values(POST_STATUS)).default(POST_STATUS.ACTIVE),
-    ...paginationSchema.describe().keys
+    status: Joi.string().valid(...Object.values(POST_STATUS)).default(POST_STATUS.ACTIVE)
   })
 };
 
@@ -146,9 +147,7 @@ const messageSchemas = {
     postId: objectIdSchema // Optional - for context
   }),
 
-  getConversation: Joi.object({
-    ...paginationSchema.describe().keys
-  })
+  getConversation: paginationSchema
 };
 
 /**
@@ -158,6 +157,10 @@ const adminSchemas = {
   login: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required()
+  }),
+
+  refreshToken: Joi.object({
+    refreshToken: Joi.string().required()
   }),
 
   createAdmin: Joi.object({
@@ -183,12 +186,7 @@ const adminSchemas = {
   }),
 
   kycAction: Joi.object({
-    action: Joi.string().valid('approve', 'reject').required(),
-    reason: Joi.string().max(500).when('action', {
-      is: 'reject',
-      then: Joi.required(),
-      otherwise: Joi.optional()
-    })
+    reason: Joi.string().max(500).required()
   })
 };
 
@@ -199,14 +197,14 @@ const gameSchemas = {
   create: Joi.object({
     name: Joi.string().min(1).max(100).trim().required(),
     slug: Joi.string().min(1).max(100).lowercase().trim(),
-    icon: Joi.string().uri().allow(''),
+    icon: Joi.string().max(500).trim().allow(''),
     genres: Joi.array().items(Joi.string().max(50)).max(5),
     isActive: Joi.boolean().default(true)
   }),
 
   update: Joi.object({
     name: Joi.string().min(1).max(100).trim(),
-    icon: Joi.string().uri().allow(''),
+    icon: Joi.string().max(500).trim().allow(''),
     genres: Joi.array().items(Joi.string().max(50)).max(5),
     isActive: Joi.boolean()
   }).min(1),

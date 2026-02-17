@@ -67,7 +67,7 @@ const getAllSubscriptions = asyncHandler(async (req, res) => {
  */
 const grantFreeSubscription = asyncHandler(async (req, res) => {
   const { userId, durationDays } = req.body;
-  const adminId = req.admin._id;
+  const adminId = req.adminId;
 
   const user = await User.findById(userId);
   if (!user) {
@@ -132,7 +132,7 @@ const grantFreeSubscription = asyncHandler(async (req, res) => {
 const revokeSubscription = asyncHandler(async (req, res) => {
   const { id: subscriptionId } = req.params;
   const { reason } = req.body;
-  const adminId = req.admin._id;
+  const adminId = req.adminId;
 
   const subscription = await Subscription.findById(subscriptionId);
   if (!subscription) {
@@ -284,11 +284,11 @@ const getSubscriptionStats = asyncHandler(async (req, res) => {
   });
 
   return successResponse(res, {
-    activeSubscriptions: activeCount,
-    expiredSubscriptions: expiredCount,
-    gracePeriodSubscriptions: gracePeriodCount,
-    newSubscriptions,
-    churnedSubscriptions: churnedCount,
+    active: activeCount,
+    expired: expiredCount,
+    gracePeriod: gracePeriodCount,
+    new: newSubscriptions,
+    churned: churnedCount,
     revenue
   }, 'Subscription statistics retrieved');
 });
