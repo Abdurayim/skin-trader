@@ -19,16 +19,20 @@ app.set('trust proxy', 1);
 
 // Security headers
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  // Allow popups (Google OAuth) to postMessage back to the opener window
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }
 }));
 
 // CORS configuration
 const corsOrigin = process.env.CORS_ORIGIN || '*';
+const corsOrigins = corsOrigin === '*' ? '*' : corsOrigin.split(',').map(s => s.trim());
 app.use(cors({
-  origin: corsOrigin === '*' ? '*' : corsOrigin.split(',').map(s => s.trim()),
+  origin: corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept-Language'],
-  credentials: true
+  // credentials only valid when specific origins are set (not wildcard)
+  credentials: corsOrigin !== '*'
 }));
 
 // Compression

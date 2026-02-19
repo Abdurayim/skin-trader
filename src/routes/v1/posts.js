@@ -50,11 +50,11 @@ router.post(
   '/',
   authenticateUser,
   requireKyc,
-  requireActiveSubscription,
   uploadRateLimiter,
   postImageUpload.array('images', 5),
   handleUploadError,
   cleanupOnError,
+  requireActiveSubscription,
   requireFiles('images', 1),
   postController.createPost
 );

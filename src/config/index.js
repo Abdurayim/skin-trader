@@ -20,7 +20,7 @@ const config = {
   // JWT
   jwt: {
     secret: process.env.JWT_SECRET || 'your-super-secret-key-change-in-production',
-    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES || '15m',
+    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES || '1h',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES || '7d'
   },
 
