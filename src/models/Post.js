@@ -111,8 +111,7 @@ const postSchema = new mongoose.Schema({
     index: true
   },
   contactInfo: {
-    type: contactInfoSchema,
-    required: true
+    type: contactInfoSchema
   },
   status: {
     type: String,

@@ -36,6 +36,14 @@ const createPost = asyncHandler(async (req, res) => {
     return badRequestResponse(res, 'Failed to process images');
   }
 
+  // Auto-populate contactInfo from user profile if not provided
+  let finalContactInfo = contactInfo
+    ? (typeof contactInfo === 'string' ? JSON.parse(contactInfo) : contactInfo)
+    : null
+  if (!finalContactInfo && req.user.email) {
+    finalContactInfo = { email: req.user.email }
+  }
+
   // Create post
   const post = new Post({
     userId: req.userId,
@@ -46,7 +54,7 @@ const createPost = asyncHandler(async (req, res) => {
     gameId,
     genre: genre || (game.genres[0] || null),
     type,
-    contactInfo: typeof contactInfo === 'string' ? JSON.parse(contactInfo) : contactInfo,
+    contactInfo: finalContactInfo || undefined,
     images: processedImages
       .filter(img => img.success)
       .map(img => ({

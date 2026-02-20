@@ -99,7 +99,7 @@ const postSchemas = {
         username: Joi.string().max(100).trim(),
         url: Joi.string().uri().allow('')
       })
-    }).or('phone', 'email').required()
+    }).or('phone', 'email')
   }),
 
   update: Joi.object({
